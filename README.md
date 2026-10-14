@@ -1,7 +1,11 @@
 # QQ → DSH → Qwen 本地 Agent 系统
 
+**中文 README** | [English README](README.en.md)
+
 用手机 QQ 发消息，家里的电脑（通过 DeepSeek Harness + 本地/远程 Qwen 模型）替你干活：
 读文件、跑脚本、操作桌面、部署服务……
+
+> **本项目即部署工具：** 这个仓库本身就是用这套系统搭建的——在 QQ 里发一条消息，DSH agent 读取 `docs/deployment.md`，自动完成仓库整理、敏感信息清洗、git 初始化和提交。你现在看到的整洁代码库，就是 agent 的产出。
 
 ```
 手机QQ ──▶ QQ开放平台 ──▶ WebSocket ──▶ 桥接服务(PC) ──▶ dsh headless ──▶ 工作区
