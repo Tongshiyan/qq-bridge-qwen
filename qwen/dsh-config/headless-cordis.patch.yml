@@ -1,0 +1,96 @@
+﻿# Your patch layer for this dsh profile, applied after every bundle layer:
+# a top-level YAML array of loader patch entries (id-targeted config
+# overrides, disables, and insert lists; `!!js` expressions allowed).
+#
+# ── 默认模型：本地 Qwen3.8-27B（provider = old4）────────────────────
+# 2026-10-11 改动：QQ 机器人走的 headless profile 默认模型，从
+# deepseek-account / deepseek-flash 改成本地部署的 Qwen3.8-27B，
+# 这样桥接服务执行的每个任务都默认交给 qwen3.8。
+#
+# 前置依赖（缺任一条，任务会报模型/连接错误，而不是静默回退）：
+#   1. 服务器端 vLLM 在跑：q38 status  →  qwen38.service
+#   2. 本机 SSH 隧道存在：%QWEN_DIR%\tunnel.ps1
+#      （把服务器 8000 映射到 127.0.0.1:8000）
+#   3. API Key 由 ~/.dsh/.credentials.yaml 的 refs.OLD4_API_KEY 解析，
+#      不需要设置环境变量 —— headless 与 desktop 共用同一个 DSH_HOME。
+#
+# 回滚 / 切回 DeepSeek 云端模型：把下面 provider/model 改回
+#   provider: deepseek-account
+#   model: deepseek-flash
+#   reasoningEffort: high
+# （llm-pi-ai 段保留无害；原始文件已备份为
+#   cordis.patch.yml.bak-20261011）
+- id: agent-default-model
+  name: "@deepseek-ai/dsh-agent-default-model"
+  config:
+    provider: old4
+    model: qwen3.8-27b
+
+# 本地 Qwen 的 OpenAI 兼容 provider —— 与桌面版
+# %USERPROFILE%\.dsh\profiles\desktop\cordis.patch.yml 中的定义保持一致。
+- id: llm-pi-ai
+  name: "@deepseek-ai/dsh-llm-pi-ai"
+  config:
+    providers:
+      old4:
+        apiKeyEnv: OLD4_API_KEY
+        api: openai-completions
+        # ⚠️ 指向本机的"关思考代理"（qq-bridge/src/proxy/thinking-off.js），
+        # 由它补上 chat_template_kwargs.enable_thinking=false 再转发到 8000。
+        #
+        # 为什么不在这里用 compat.chatTemplateKwargs 关思考：
+        # 这个模型没有声明 reasoning 支持，dsh-llm-pi-ai 会把思考相关的 kwargs
+        # 整个丢掉 —— 实测用透明代理截包确认，请求体里既没有 chat_template_kwargs
+        # 也没有 reasoning_effort，哪怕配置里写了。（写了 reasoning: high 会直接报
+        # UNSUPPORTED_REASONING_EFFORT。）
+        #
+        # 实测收益：同一 prompt 开着思考 12.2s / 700 token 全花在 reasoning_content
+        # 且正文 0 字；关掉后 9.5s / 正文 1022 字。桌面版仍直连 8000，思考照旧。
+        baseURL: http://127.0.0.1:8002/v1
+        models:
+          - id: qwen3.8-27b
+            name: qwen3.8-27b
+            # ★ 声明支持图片输入。默认是 ["text"]，于是 read_image 会被直接拒绝：
+            #     Error: model "qwen3.8-27b" does not declare image input
+            # Qwen3.8-27B 是原生 VLM，vLLM 侧按模型 config 自动启用多模态；
+            # 桥接把 QQ 图片落盘后交给 read_image，就能真正"看图"了。
+            # （若哪天换成纯文本模型，这行必须去掉，否则会在请求中途被 provider 拒绝。）
+            input: [text, image]
+
+# ── 权限：不在这里配！──────────────────────────────────────────────
+#
+# 我曾在这里写过 `- id: permission-presets` 和 `- id: sandbox-policy`，
+# 两者**都无效**，其中前者还会让 DSH 报错：
+#     patch: entry "permission-presets" not found
+#
+# 正确机制是**环境变量** `DSH_PERMISSION_MODE`，由 `dsh --dump-config` 可见：
+#     - id: sandbox-policy
+#         mode: !!js process.env.DSH_PERMISSION_MODE ?? 'workspace-write'
+#     - id: approval
+#         policy: !!js (… DSH_PERMISSION_MODE …) === 'danger-full-access'
+#                        ? 'never' : 'ask'
+#
+# 沙箱与审批从这个变量成对派生，所以只设它即可，profile 无需改动。
+# 桥接服务在 spawn DSH 时注入该变量 —— 配置项是 config/config.json 的
+# dsh.permissionMode，默认 danger-full-access。
+
+# ── MCP：Windows-MCP ──────────────────────────────────────────────
+# GitHub 上的 Windows MCP（CursorTouch/Windows-MCP，8k+ stars，MIT）：
+# 截图/快照、鼠标键盘、打开应用、PowerShell、文件操作等 Windows UI 自动化。
+# 通过 DSH 内置的 dsh-mcp-client 以 stdio 接入；uvx 自动准备 Python 3.14 与
+# windows-mcp 包（已预装，首次连接下载依赖可能耗时 1-2 分钟；
+# failOnStartupError 保持默认 false，连接失败自动重连，不阻塞 DSH 启动）。
+# 连接成功后 agent 获得 mcp__windows__Screenshot、mcp__windows__Click、
+# mcp__windows__PowerShell、mcp__windows__FileSystem 等 21 个工具。
+# 2026-10-12 按用户要求安装（「为 deepseek harness 安装 github 上的 windows mcp」）。
+- insert:
+    - id: windows-mcp
+      name: "@deepseek-ai/dsh-mcp-client"
+      config:
+        serverName: windows
+        transport: stdio
+        command: %USERPROFILE%\.local\bin\uvx.exe
+        args:
+          - windows-mcp
+          - serve
+        toolCallTimeoutMs: 120000

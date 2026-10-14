@@ -1,0 +1,45 @@
+# ===== 凭证与个人数据（绝不提交）=====
+**/creds.json
+**/config/config.json
+**/MEMORY.md
+**/.env
+**/*.pem
+**/*.key
+**/id_ed25519*
+**/id_rsa*
+**/qwen-console.config.json
+**/install-report.md
+**/dsh-config.txt
+**/bin/
+**/disabled-autostart/
+
+# ===== 运行产物 =====
+**/node_modules/
+**/logs/
+**/state/
+**/workspace/
+**/artifacts/
+**/inbox/
+**/__pycache__/
+**/*.pyc
+**/.pnpm-store/
+
+# ===== 二进制 / 构建产物 =====
+**/*.exe
+**/*.ico
+**/*.png
+**/*.docx
+**/*.pptx
+**/*.zip
+**/*.pdf
+**/Qwen控制台.exe
+
+# ===== 测试/调试残留 =====
+*.tmp
+*.log
+_tmp*
+
+# ===== 系统 =====
+Thumbs.db
+.DS_Store
+Desktop.ini

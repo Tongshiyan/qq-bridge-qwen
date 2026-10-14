@@ -1,0 +1,9 @@
+# 凭证与本地产物（绝不提交）
+config/creds.json
+.env
+logs/
+node_modules/
+
+# 权限申请可能需要的截图/存档
+*.png
+*.jpg

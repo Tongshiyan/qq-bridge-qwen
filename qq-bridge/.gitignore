@@ -1,0 +1,22 @@
+# 凭证 —— 绝不提交
+config/creds.json
+.env
+
+# 运行产物
+logs/
+state/
+workspace/
+artifacts/
+node_modules/
+.pnpm-store/
+
+# 长期记忆库 —— 个人数据（可能含隐私），不要提交
+memory/MEMORY.md
+
+# 用户发来的图片（个人数据）
+inbox/
+
+# 测试/调试残留
+*.tmp
+*.log
+_tmp*

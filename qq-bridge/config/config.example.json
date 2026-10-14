@@ -1,0 +1,65 @@
+{
+  "_说明": [
+    "桥接服务配置。全部字段可选，未写的用内置默认值。",
+    "改完重启服务生效。",
+    "复制本文件为 config.json 后修改。"
+  ],
+
+  "dsh": {
+    "_permissionMode说明": [
+      "权限开关。取值：read-only / workspace-write / danger-full-access",
+      "workspace-write = 只能写工作目录（安全）",
+      "danger-full-access = 全盘可写（危险，仅本地可信环境使用）"
+    ],
+    "permissionMode": "workspace-write",
+
+    "_workspace说明": "DSH 子进程工作目录。建议设为桌面或专用工作区，不要设为整个用户目录（会包住 %TEMP% 导致沙箱失败）",
+    "workspace": "C:\\Users\\<你的用户名>\\Desktop",
+
+    "persistSession": true,
+    "timeoutMs": 1800000,
+    "idleTimeoutMs": 300000
+  },
+
+  "progress": {
+    "_说明": "进度播报。maxPushes=0 表示不发进度，只给最终结果（推荐，避免耗尽 QQ 被动回复配额）",
+    "silentBeforeMs": 8000,
+    "minIntervalMs": 15000,
+    "maxPushes": 0,
+    "heartbeatMs": 0,
+    "ackOnAccept": false
+  },
+
+  "memory": {
+    "enabled": true,
+    "dir": "<项目绝对路径>\\memory",
+    "file": "MEMORY.md",
+    "maxInjectChars": 6000,
+    "maxFileChars": 200000
+  },
+
+  "output": {
+    "artifactDir": "<项目绝对路径>\\artifacts"
+  },
+
+  "security": {
+    "_说明": "openId 白名单。只有列表中的 openId 能控制你的电脑",
+    "allowedOpenIds": ["<你的openId>"],
+    "notifyUnauthorized": false
+  },
+
+  "qq": {
+    "allowGroup": false,
+    "imageDir": "<项目绝对路径>\\inbox",
+    "maxImageBytes": 10485760,
+    "imageDownloadTimeoutMs": 20000
+  },
+
+  "launch": {
+    "_说明": "/run 指令白名单。由桥接直接启动本机 GUI 程序（不经过 DSH 沙箱）",
+    "_格式": "{ \"程序名\": { \"path\": \"完整路径\" } }",
+    "_示例": {
+      "wechat": { "path": "D:\\softwares\\WeChat\\Weixin\\Weixin.exe" }
+    }
+  }
+}

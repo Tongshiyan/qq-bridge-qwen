@@ -1,0 +1,41 @@
+{
+  "name": "dsh-qq-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Bridge that lets a QQ bot drive DeepSeek Harness (DSH) running on this PC.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/main.js",
+    "probe": "node src/probe.js",
+    "print-config": "node src/main.js --print-config",
+    "test": "node tests/events.test.js && node tests/launch-context.test.js && node tests/chunk.test.js && node tests/state.test.js && node tests/memory.test.js && node tests/images.test.js && node tests/proxy.test.js && node tests/config.test.js && node tests/runner.test.js && node tests/guard.test.js && node tests/policy.test.js && node tests/approval.test.js && node tests/progress.test.js && node tests/artifacts.test.js && node tests/pipeline.test.js && node tests/integration.test.js",
+    "test:events": "node tests/events.test.js",
+    "test:launch": "node tests/launch-context.test.js",
+    "test:chunk": "node tests/chunk.test.js",
+    "test:state": "node tests/state.test.js",
+    "test:memory": "node tests/memory.test.js",
+    "test:images": "node tests/images.test.js",
+    "test:proxy": "node tests/proxy.test.js",
+    "test:config": "node tests/config.test.js",
+    "test:runner": "node tests/runner.test.js",
+    "test:guard": "node tests/guard.test.js",
+    "test:policy": "node tests/policy.test.js",
+    "test:approval": "node tests/approval.test.js",
+    "test:progress": "node tests/progress.test.js",
+    "test:artifacts": "node tests/artifacts.test.js",
+    "test:pipeline": "node tests/pipeline.test.js",
+    "test:integration": "node tests/integration.test.js",
+    "probe:spawn": "node tests/spawn-cmd-probe.js",
+    "probe:sandbox": "node tests/sandbox-probe.js",
+    "task:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-task.ps1 -Action install",
+    "task:status": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-task.ps1 -Action status",
+    "task:uninstall": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-task.ps1 -Action uninstall"
+  },
+  "dependencies": {
+    "@tencent-connect/qqbot-nodejs": "^1.0.4",
+    "ws": "^8.22.0"
+  }
+}

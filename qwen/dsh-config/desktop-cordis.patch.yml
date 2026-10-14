@@ -1,0 +1,71 @@
+﻿# Your patch layer for this dsh profile, applied after every bundle layer:
+# a top-level YAML array of loader patch entries (id-targeted config
+# overrides, disables, and insert lists; `!!js` expressions allowed).
+- id: agent-default-model
+  name: "@deepseek-ai/dsh-agent-default-model"
+  config:
+    provider: deepseek-account
+    model: deepseek-flash
+    reasoningEffort: high
+- id: ui-settings-account
+  name: "@deepseek-ai/dsh-client-ui-settings-account"
+  config:
+    version: 1
+    step: done
+    purpose: both
+    process: detailed
+    completion: completed
+    usage: detailed
+    developerTools: true
+- id: ui-chat
+  name: "@deepseek-ai/dsh-client-ui-chat"
+  config:
+    transcriptView: detailed
+    performanceUsage: detailed
+- id: ui-settings
+  name: "@deepseek-ai/dsh-client-ui-settings"
+  config:
+    enabled: true
+- id: llm-pi-ai
+  name: "@deepseek-ai/dsh-llm-pi-ai"
+  config:
+    providers:
+      old4:
+        apiKeyEnv: OLD4_API_KEY
+        api: openai-completions
+        baseURL: http://127.0.0.1:8000/v1
+        models:
+          - id: qwen3.8-27b
+            name: qwen3.8-27b
+            input:
+              - text
+              - image
+
+# ── MCP：Windows-MCP ──────────────────────────────────────────────
+# GitHub 上的 Windows MCP（CursorTouch/Windows-MCP，8k+ stars，MIT）：
+# 截图/快照、鼠标键盘、打开应用、PowerShell、文件操作等 Windows UI 自动化。
+# 通过 DSH 内置的 dsh-mcp-client 以 stdio 接入。
+# failOnStartupError 保持默认 false，连接失败自动重连，不阻塞 DSH 启动。
+# 连接成功后 agent 获得 mcp__windows__Screenshot、mcp__windows__Click、
+# mcp__windows__PowerShell、mcp__windows__FileSystem 等 21 个工具。
+# 2026-10-12 按用户要求安装（「为 deepseek harness 安装 github 上的 windows mcp」）。
+#
+# 2026-10-12 更新：原先用 `uvx windows-mcp serve` 启动，uvx 每次都要解析/写入
+# uv 缓存，环境不干净时可能卡住或反复拉包。现改为直接调用已装好依赖的虚拟环境
+# 解释器（windows-mcp 0.8.8，Python 3.14，离线可启动，无需 uvx 解析）：
+#   %QWEN_DIR%\windows-mcp-venv\Scripts\windows-mcp.exe
+# 已验证：initialize 返回 {name: windows-mcp, version: 4.1.0}，
+# tools/list 返回 21 个工具，DisplayInventory 实测返回 1920x1080 @1.25 缩放。
+# 若该 venv 被移动或删除，可用 uvx 方案回退：
+#   command: %USERPROFILE%\.local\bin\uvx.exe
+#   args: [windows-mcp, serve]
+- insert:
+    - id: windows-mcp
+      name: "@deepseek-ai/dsh-mcp-client"
+      config:
+        serverName: windows
+        transport: stdio
+        command: %QWEN_DIR%\windows-mcp-venv\Scripts\windows-mcp.exe
+        args:
+          - serve
+        toolCallTimeoutMs: 120000
